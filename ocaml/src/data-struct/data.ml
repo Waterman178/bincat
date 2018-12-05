@@ -26,14 +26,14 @@ module Word =
 
     let size w = snd w
 
-    let compare (w1, sz1) (w2, sz2) =
-      let n = Z.compare w1 w2 in
-      if n = 0 then sz1 - sz2 else n
+    let compare  (w1, sz1) (w2, sz2) =
+      let n = (Z.compare[@inlined]) w1 w2 in
+      if n = 0 then sz1 - sz2 else n [@@inline]
 
     let compare_value (w1, _) (w2, _) =
         Z.compare w1 w2
 
-    let equal v1 v2 = compare v1 v2 = 0
+    let equal v1 v2 = compare v1 v2 = 0 [@@inline]
 
     let zero sz = Z.zero, sz
 
@@ -166,20 +166,20 @@ struct
             | Global, Global -> 0
             | Global, _ -> -1
             | Heap (id1, _), Heap (id2, _) -> id1 - id2
-            | Heap _, Global -> 1
+            | Heap _, Global -> 1 [@@inline]
 
-        let equal_region r1 r2 = compare_region r1 r2 = 0
+        let equal_region r1 r2 = compare_region r1 r2 = 0 [@@inline]
                                                                               
         let compare (r1, w1) (r2, w2) =
              let n = compare_region r1 r2 in
              if n <> 0 then
                n
              else
-               Word.compare_value w1 w2
+               Word.compare_value w1 w2 [@@inline]
 
         let equal (r1, w1) (r2, w2) =
             if equal_region r1 r2 then Word.equal w1 w2
-            else false
+            else false [@@inline]
 
         let of_string r a n =
             let w = Word.of_string a n in
